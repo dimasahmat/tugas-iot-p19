@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Log extends Model
+class Device extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['device_id', 'log_time', 'data'];
+    protected $fillable = ['name'];
 
-    public function device()
+    public function logs()
     {
-        return $this->belongsTo(Device::class);
+        return $this->hasMany(Log::class);
     }
 }

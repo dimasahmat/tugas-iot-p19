@@ -2,77 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use Illuminate\Http\Request;
 
 class LogController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         return Log::all();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $log_data = new Devices;
-        $log_data->log_data = $request->log_data;
-        $log_data->save();
-        return response()->json([
-            "message" => "Data berhasil ditambahkan."
-        ], 201);
+        $request->validate([
+            'device_id' => 'required|exists:devices,id',
+            'log_time' => 'required|date',
+            'data' => 'required'
+        ]);
+        return Log::create($request->all());
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(number $log_data)
+    public function show($id)
     {
-        return Log::find($log_data);
+        return Log::findOrFail($id);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        if (Log::where('log_data', $log_data)->exists()){
-            $devices = Log::find($log_data);
-            $devices ->log_data = is_null($request->log_data) ? $log->log_data : $request->log_data;
-            $devices ->save();
-
-            return response()->json([
-                "message" => "Data berhasil diupdate"
-            ], 201);
-        } else {
-
-            return response()->json([
-                "message" => "Data tidak ditemukan"
-            ], 404);
-        }
+        $log = Log::findOrFail($id);
+        $log->update($request->all());
+        return $log;
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        if (Log::where('log_data', $log_data)->exists()){
-            $log_data = Log::find($log_data);
-            $log_data->delete();
-
-            return response()->json([
-                "message" => "Data telah dihapus."
-            ], 201);
-            } else {
-
-            return response()->json([
-            "message" => "Data tidak ditemukan."
-            ], 404);
-            }
+        Log::destroy($id);
+        return response()->noContent();
     }
 }
